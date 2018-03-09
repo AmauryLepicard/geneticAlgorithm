@@ -1,10 +1,11 @@
-import pygame
-import sys
-import random
-import time
 import math
-import Parameters
+import random
+import sys
+import time
 
+import pygame
+
+import Parameters
 from Circle import Asteroid
 
 pygame.init()
@@ -13,7 +14,8 @@ myFont = pygame.font.SysFont(None, 15)
 
 asteroids = []
 for i in range(20):
-    randColor = (random.randint(200,255), random.randint(200,255), random.randint(200,255))
+    randColor = random.randint(50, 255)
+    randColor = (randColor, randColor, randColor)
     c = Asteroid(random.uniform(0, Parameters.SCREEN_WIDTH), random.uniform(0, Parameters.SCREEN_HEIGHT), random.uniform(20, 50), randColor, 100, random.uniform(0, 2*math.pi))
     asteroids.append(c)
 

@@ -2,6 +2,7 @@ import math
 import random
 import sys
 
+import numpy as np
 import pygame
 from numpy.linalg import norm
 
@@ -24,6 +25,8 @@ for i in range(5):
 # asteroids.append(Asteroid("pink", 10.0,10.0,40,(255,0,255),0.2,math.pi/4))
 # asteroids.append(Asteroid("green", 10.0,400.0,40,(0,255, 0),0.2,-math.pi/3))
 
+mouseSprite = pygame.sprite.Sprite()
+
 t = pygame.time.get_ticks()
 while 1:
     oldT = t
@@ -36,7 +39,10 @@ while 1:
             sys.exit()
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            print(pos)
+            for a in asteroids:
+                if a.radius > norm(a.pos - np.array(pos)):
+                    print(a.name, "destroyed")
+                    Asteroid.destroyAsteroid(a)
 
     for a1 in asteroids:
         for a2 in asteroids:

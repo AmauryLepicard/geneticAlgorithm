@@ -83,3 +83,7 @@ class Asteroid(pygame.sprite.Sprite):
         new_a2_pos = collisionPoint + (a2.pos - collisionPoint) * growthRatio
         self.pos = new_a1_pos
         a2.pos = new_a2_pos
+
+
+def destroyAsteroid(a):
+    pass

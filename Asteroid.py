@@ -31,6 +31,13 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.x = self.pos[0] - self.radius
         self.rect.y = self.pos[1] - self.radius
 
+    def generateShape(self, edgeNumber):
+        xList = np.random.uniform(-self.radius, self.radius, edgeNumber)
+        yList = np.random.uniform(-self.radius, self.radius, edgeNumber)
+        xList.sort()
+        yList.sort()
+        xList2 = xList
+
     def update(self, delta):
         self.pos[0] += self.speed * math.cos(self.theta) * delta
         self.pos[1] += self.speed * math.sin(self.theta) * delta
@@ -84,6 +91,14 @@ class Asteroid(pygame.sprite.Sprite):
         self.pos = new_a1_pos
         a2.pos = new_a2_pos
 
+    def split(self):
+        print("Splitting")
 
-def destroyAsteroid(a):
-    pass
+        childRadius = self.radius / math.sqrt(2.0)
+        theta1 = self.theta + math.pi / 8.0
+        theta2 = self.theta - math.pi / 8.0
+        pos1 = self.pos + childRadius * np.array([math.cos(theta1), math.sin(theta1)])
+        pos2 = self.pos + childRadius * np.array([math.cos(theta2), math.sin(theta2)])
+        c1 = Asteroid(self.name + "1", pos1[0], pos1[1], childRadius, self.color, self.speed, theta1)
+        c2 = Asteroid(self.name + "2", pos2[0], pos2[1], childRadius, self.color, self.speed, theta2)
+        return c1, c2

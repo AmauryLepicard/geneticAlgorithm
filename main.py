@@ -41,8 +41,12 @@ while 1:
             pos = pygame.mouse.get_pos()
             for a in asteroids:
                 if a.radius > norm(a.pos - np.array(pos)):
-                    print(a.name, "destroyed")
-                    Asteroid.destroyAsteroid(a)
+                    if a.mass > Parameters.MIN_ASTEROID_MASS:
+                        c1, c2 = a.split()
+                        asteroids.add(c1)
+                        asteroids.add(c2)
+                    asteroids.remove(a)
+                    del a
 
     for a1 in asteroids:
         for a2 in asteroids:
@@ -51,7 +55,9 @@ while 1:
             if (a1.radius + a2.radius) > norm(a1.pos - a2.pos):
                 a1.fixCollisionPositions(a2)
                 a1.computeCollisionSpeed(a2)
-        a1.update(delta)
+
+    for a in asteroids:
+        a.update(delta)
 
     asteroids.draw(screen)
     pygame.display.flip()

@@ -1,4 +1,5 @@
 import math
+import random
 
 import numpy as np
 import pygame.sprite
@@ -36,7 +37,22 @@ class Asteroid(pygame.sprite.Sprite):
         yList = np.random.uniform(-self.radius, self.radius, edgeNumber)
         xList.sort()
         yList.sort()
-        xList2 = xList
+        xShuffled = random.sample(xList[1:-1], edgeNumber - 2)
+        xList1 = xList[0]
+        xList1.append(xShuffled[:len(xShuffled) / 2])
+        xList1.append(xList[-1])
+        xList2 = xList[0]
+        xList2.append(xShuffled[len(xShuffled) / 2:])
+        xList2.append(xList[-1])
+        yShuffled = random.sample(xList[1:-1], edgeNumber - 2)
+        yList1 = yList[0]
+        yList1.append(yShuffled[:len(yShuffled) / 2])
+        yList1.append(yList[-1])
+        yList2 = xList[0]
+        yList2.append(yShuffled[len(yShuffled) / 2:])
+        yList2.append(yList[-1])
+
+
 
     def update(self, delta):
         self.pos[0] += self.speed * math.cos(self.theta) * delta

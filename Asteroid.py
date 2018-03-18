@@ -8,16 +8,19 @@ from numpy.linalg import norm
 
 
 class Asteroid(pygame.sprite.Sprite):
-    def __init__(self, name, x, y, r, c, v, theta):
+    nextAsteroidNumber = 0
+
+    def __init__(self, x, y, radius, color, speed, theta):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
 
-        self.name = name
+        self.name = "a" + str(Asteroid.nextAsteroidNumber)
+        Asteroid.nextAsteroidNumber += 1
         self.pos = np.array((x, y))
-        self.radius = r
-        self.color = c
+        self.radius = radius
+        self.color = color
         self.mass = 100 * self.radius ** 2
-        self.speed = v
+        self.speed = speed
         self.theta = theta
 
         self.image = pygame.Surface((int(self.radius * 2), int(self.radius * 2)))
@@ -25,7 +28,7 @@ class Asteroid(pygame.sprite.Sprite):
         # self.image = pygame.transform.scale(self.image, (int(self.radiu( * 2), int(self.radius * 2)))
         self.image.set_colorkey((0, 0, 0))
         vectorList = self.generateShape(50)
-        self.rect = pygame.draw.polygon(self.image, self.color, vectorList, 0)
+        self.rect = pygame.draw.polygon(self.image, self.color, vectorList, 5)
         self.rect.x = self.pos[0] - self.radius
         self.rect.y = self.pos[1] - self.radius
 
@@ -76,6 +79,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.y = self.pos[1] - self.radius
 
     def computeCollisionSpeed(self, a2):
+        # print("Collision between", self.name, "and", a2.name)
         v = self.pos - a2.pos
         # correct the distance
         v = v * (self.radius + a2.radius) / norm(v)
@@ -121,14 +125,3 @@ class Asteroid(pygame.sprite.Sprite):
         self.pos = new_a1_pos
         a2.pos = new_a2_pos
 
-    def split(self):
-        print("Splitting")
-
-        childRadius = self.radius / math.sqrt(2.0)
-        theta1 = self.theta + math.pi / 8.0
-        theta2 = self.theta - math.pi / 8.0
-        pos1 = self.pos + childRadius * np.array([math.cos(theta1), math.sin(theta1)])
-        pos2 = self.pos + childRadius * np.array([math.cos(theta2), math.sin(theta2)])
-        c1 = Asteroid(self.name + "1", pos1[0], pos1[1], childRadius, self.color, self.speed, theta1)
-        c2 = Asteroid(self.name + "2", pos2[0], pos2[1], childRadius, self.color, self.speed, theta2)
-        return c1, c2

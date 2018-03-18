@@ -1,11 +1,10 @@
 import math
 import random
+from itertools import accumulate
 
 import numpy as np
-import pygame.sprite
+import pygame
 from numpy.linalg import norm
-
-import Parameters
 
 
 class Asteroid(pygame.sprite.Sprite):
@@ -21,43 +20,58 @@ class Asteroid(pygame.sprite.Sprite):
         self.speed = v
         self.theta = theta
 
-        # Create an image of the block, and fill it with a color.
-        # This could also be an image loaded from the disk.
-        self.image = pygame.image.load('Asteroid.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (int(self.radius * 2), int(self.radius * 2)))
-
-        # Fetch the rectangle object that has the dimensions of the image
-        # Update the position of this object by setting the values of rect.x and rect.y
-        self.rect = self.image.get_rect()
+        self.image = pygame.Surface((int(self.radius * 2), int(self.radius * 2)))
+        # self.image = pygame.image.load('Asteroid.png').convert_alpha()
+        # self.image = pygame.transform.scale(self.image, (int(self.radiu( * 2), int(self.radius * 2)))
+        self.image.set_colorkey((0, 0, 0))
+        vectorList = self.generateShape(50)
+        self.rect = pygame.draw.polygon(self.image, self.color, vectorList, 0)
         self.rect.x = self.pos[0] - self.radius
         self.rect.y = self.pos[1] - self.radius
 
+        self.mask = pygame.mask.from_surface(self.image)
+
     def generateShape(self, edgeNumber):
-        xList = np.random.uniform(-self.radius, self.radius, edgeNumber)
-        yList = np.random.uniform(-self.radius, self.radius, edgeNumber)
+        xList = list(sorted(np.random.randint(-self.radius, self.radius, edgeNumber)))
+        yList = list(sorted(np.random.randint(-self.radius, self.radius, edgeNumber)))
         xList.sort()
         yList.sort()
-        xShuffled = random.sample(xList[1:-1], edgeNumber - 2)
-        xList1 = xList[0]
-        xList1.append(xShuffled[:len(xShuffled) / 2])
-        xList1.append(xList[-1])
-        xList2 = xList[0]
-        xList2.append(xShuffled[len(xShuffled) / 2:])
-        xList2.append(xList[-1])
-        yShuffled = random.sample(xList[1:-1], edgeNumber - 2)
-        yList1 = yList[0]
-        yList1.append(yShuffled[:len(yShuffled) / 2])
-        yList1.append(yList[-1])
-        yList2 = xList[0]
-        yList2.append(yShuffled[len(yShuffled) / 2:])
-        yList2.append(yList[-1])
 
+        xShuffled = random.sample(list(xList[1:-1]), edgeNumber - 2)
+        xList1 = [xList[0]] + xShuffled[:int(len(xShuffled) / 2)] + [xList[-1]]
+        xList2 = [xList[0]] + xShuffled[int(len(xShuffled) / 2):] + [xList[-1]]
 
+        yShuffled = random.sample(list(yList[1:-1]), edgeNumber - 2)
+        yList1 = [yList[0]] + yShuffled[:int(len(yShuffled) / 2)] + [yList[-1]]
+        yList2 = [yList[0]] + yShuffled[int(len(yShuffled) / 2):] + [yList[-1]]
+
+        xDeltas = [xList1[i + 1] - xList1[i] for i in range(len(xList1) - 1)] + [xList2[i] - xList2[i + 1] for i in
+                                                                                 range(len(xList2) - 1)]
+        yDeltas = [yList1[i + 1] - yList1[i] for i in range(len(yList1) - 1)] + [yList2[i] - yList2[i + 1] for i in
+                                                                                 range(len(yList2) - 1)]
+        random.shuffle(xDeltas)
+        random.shuffle(yDeltas)
+
+        vectorList = [(x, y) for x, y in zip(xDeltas, yDeltas)]
+        vectorList = sorted(vectorList, key=lambda vector: -np.arctan2(vector[0], vector[1]))
+        vectorList = list(accumulate(vectorList, lambda a, b: (a[0] + b[0], a[1] + b[1])))
+        vectorList = [(int(x), int(y)) for x, y in vectorList]
+
+        minX = min(v[0] for v in vectorList)
+        maxX = max(v[0] for v in vectorList)
+        minY = min(v[1] for v in vectorList)
+        maxY = max(v[1] for v in vectorList)
+        xVector = np.array([v[0] for v in vectorList])
+        yVector = np.array([v[1] for v in vectorList])
+        xVector = (xVector - minX) * 2 * self.radius / (maxX - minX)
+        yVector = (yVector - minY) * 2 * self.radius / (maxY - minY)
+        vectorList = [(int(x), int(y)) for x, y in zip(xVector, yVector)]
+        return vectorList
 
     def update(self, delta):
         self.pos[0] += self.speed * math.cos(self.theta) * delta
         self.pos[1] += self.speed * math.sin(self.theta) * delta
-        self.pos = np.mod(self.pos, np.array([Parameters.SCREEN_WIDTH, Parameters.SCREEN_HEIGHT]))
+        #self.pos = np.mod(self.pos, np.array([Parameters.SCREEN_WIDTH, Parameters.SCREEN_HEIGHT]))
         self.rect.x = self.pos[0] - self.radius
         self.rect.y = self.pos[1] - self.radius
 

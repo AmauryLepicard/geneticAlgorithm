@@ -15,7 +15,7 @@ pygame.display.set_caption("Asteroids")
 
 mouseSprite = pygame.sprite.Sprite()
 
-game = Game.Game(screen, area, asteroidsNumber=2)
+game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
 
 t = pygame.time.get_ticks()
 while 1:

@@ -6,6 +6,8 @@ import numpy as np
 import pygame
 from numpy.linalg import norm
 
+from Parameters import *
+
 
 class Asteroid(pygame.sprite.Sprite):
     nextAsteroidNumber = 0
@@ -24,10 +26,14 @@ class Asteroid(pygame.sprite.Sprite):
         self.theta = theta
 
         self.image = pygame.Surface((int(self.radius * 2), int(self.radius * 2)))
-        # self.image = pygame.image.load('Asteroid.png').convert_alpha()
-        # self.image = pygame.transform.scale(self.image, (int(self.radiu( * 2), int(self.radius * 2)))
         self.image.set_colorkey((0, 0, 0))
-        vectorList = self.generateShape(50)
+
+        if USE_IRREGULAR_POLYGONS:
+            vectorList = self.generateShape(50)
+        else:
+            vectorList = [(int(self.radius + self.radius * math.cos(i * 2 * math.pi / 12.0)),
+                           int(self.radius + self.radius * math.sin(i * 2 * math.pi / 12.0))) for i in range(12)]
+
         self.rect = pygame.draw.polygon(self.image, self.color, vectorList, 5)
         self.rect.x = self.pos[0] - self.radius
         self.rect.y = self.pos[1] - self.radius

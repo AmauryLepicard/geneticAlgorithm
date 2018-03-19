@@ -48,12 +48,10 @@ class Game:
             destY = random.uniform(BORDER_SIZE + SCREEN_HEIGHT * 0.25, BORDER_SIZE + SCREEN_HEIGHT * 0.75)
             theta = math.atan2(destY - y, destX - x)
 
-            c = Asteroid(x=x, y=y, radius=random.uniform(20.0, 50.0), color=randColor, speed=random.uniform(0.5, 1.0),
-                         theta=theta)
+            c = Asteroid(x=x, y=y, radius=random.uniform(20.0, 50.0), color=randColor,
+                         speed=ASTEROID_MAX_SPEED * random.uniform(0.5, 1.0), theta=theta)
 
             self.asteroids.add(c)
-        # self.asteroids.append(Asteroid("pink", 10.0,10.0,40,(255,0,255),0.2,math.pi/4))
-        # self.asteroids.append(Asteroid("green", 10.0,400.0,40,(0,255, 0),0.2,-math.pi/3))
 
     def destroyAsteroid(self, a):
         # print("Destroying", a.name)
@@ -70,9 +68,7 @@ class Game:
                 for a in self.asteroids:
                     if a.radius > np.linalg.norm(a.pos - np.array(pos)):
                         if a.mass > MIN_ASTEROID_MASS:
-                            c1, c2 = a.split()
-                            self.asteroids.add(c1)
-                            self.asteroids.add(c2)
+                            self.split(a)
                         self.asteroids.remove(a)
                         del a
 
@@ -92,17 +88,18 @@ class Game:
     def update(self, delta):
         self.manageInput()
 
-        for a1 in self.asteroids:
-            for a2 in self.asteroids:
-                if a1 == a2:
-                    break
-                if pygame.sprite.collide_mask(a1, a2) is not None:
-                    a1.fixCollisionPositions(a2)
-                    a1.computeCollisionSpeed(a2)
-                    if a1.mass > MIN_ASTEROID_MASS:
-                        self.split(a1)
-                    if a2.mass > MIN_ASTEROID_MASS:
-                        self.split(a2)
+        if ENABLE_ASTEROID_COLLISION:
+            for a1 in self.asteroids:
+                for a2 in self.asteroids:
+                    if a1 == a2:
+                        break
+                    if pygame.sprite.collide_mask(a1, a2) is not None:
+                        a1.fixCollisionPositions(a2)
+                        a1.computeCollisionSpeed(a2)
+                        if a1.mass > MIN_ASTEROID_MASS:
+                            self.split(a1)
+                        if a2.mass > MIN_ASTEROID_MASS:
+                            self.split(a2)
 
         for a in self.asteroids:
             if not self.area.colliderect(a):

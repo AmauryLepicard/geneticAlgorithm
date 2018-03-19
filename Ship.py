@@ -23,24 +23,23 @@ class Ship(pygame.sprite.Sprite):
         self.acceleration = 0.0
 
         self.color = color
-        self.size = 30
 
         # unpowered ship image
-        self.unpoweredShipImage = pygame.Surface((self.size * 2, self.size + 1))
+        self.unpoweredShipImage = pygame.Surface((SHIP_SIZE * 2, SHIP_SIZE + 1))
         self.unpoweredShipImage.set_colorkey((0, 0, 0))
         pygame.draw.aalines(self.unpoweredShipImage, self.color, False,
-                            [(0, 0), (self.size * 2, self.size * 0.5), (0, self.size)], 1)
+                            [(0, 0), (SHIP_SIZE * 2, SHIP_SIZE * 0.5), (0, SHIP_SIZE)], 1)
         pygame.draw.aalines(self.unpoweredShipImage, self.color, False,
-                            [(self.size * 0.5, self.size * 0.125), (self.size * 0.5, self.size * 0.875)], 1)
+                            [(SHIP_SIZE * 0.5, SHIP_SIZE * 0.125), (SHIP_SIZE * 0.5, SHIP_SIZE * 0.875)], 1)
 
         # powered ship image
         self.poweredShipImage = self.unpoweredShipImage.copy()
         pygame.draw.aalines(self.poweredShipImage, (255, 0, 0), False,
-                            [(self.size * 0.5, self.size * 0.25), (0, self.size * 0.5),
-                             (self.size * 0.5, self.size * 0.75)], 1)
+                            [(SHIP_SIZE * 0.5, SHIP_SIZE * 0.25), (0, SHIP_SIZE * 0.5),
+                             (SHIP_SIZE * 0.5, SHIP_SIZE * 0.75)], 1)
 
         # generating  rect
-        self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size, self.size * 2)
+        self.rect = pygame.Rect(self.pos[0], self.pos[1], SHIP_SIZE, SHIP_SIZE * 2)
         self.rect.center = (self.pos[0], self.pos[1])
 
         self.mask = pygame.mask.from_surface(self.unpoweredShipImage)
@@ -51,7 +50,7 @@ class Ship(pygame.sprite.Sprite):
         thetaVector = np.array([math.cos(self.theta), math.sin(self.theta)])
 
         self.speedVector += delta * self.acceleration * thetaVector
-        self.speedVector *= 0.99
+        self.speedVector *= SHIP_DRAG_COEFF
 
         self.pos += delta * self.speedVector
         self.pos = np.mod(self.pos, [SCREEN_WIDTH, SCREEN_HEIGHT])

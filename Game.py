@@ -33,18 +33,18 @@ class Game:
                 pos = pygame.mouse.get_pos()
                 for a in self.asteroids:
                     if a.radius > np.linalg.norm(a.pos - np.array(pos)):
-                        if a.mass > MIN_ASTEROID_MASS:
+                        if a.mass > ASTEROID_MIN_MASS:
                             self.splitAsteroid(a)
                         self.asteroids.remove(a)
                         del a
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.ship.thetaSpeed = -0.002
+                    self.ship.thetaSpeed = -SHIP_TURN_RATE
                 if event.key == pygame.K_RIGHT:
-                    self.ship.thetaSpeed = 0.002
+                    self.ship.thetaSpeed = SHIP_TURN_RATE
                 if event.key == pygame.K_UP:
-                    self.ship.acceleration = 0.0005
+                    self.ship.acceleration = SHIP_ACCELERATION
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -65,9 +65,9 @@ class Game:
                     if pygame.sprite.collide_mask(a1, a2) is not None:
                         a1.fixCollisionPositions(a2)
                         a1.computeCollisionSpeed(a2)
-                        if a1.mass > MIN_ASTEROID_MASS:
+                        if a1.mass > ASTEROID_MIN_MASS:
                             self.splitAsteroid(a1)
-                        if a2.mass > MIN_ASTEROID_MASS:
+                        if a2.mass > ASTEROID_MIN_MASS:
                             self.splitAsteroid(a2)
 
         for a in self.asteroids:

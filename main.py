@@ -21,6 +21,7 @@ t = pygame.time.get_ticks()
 while 1:
     oldT = t
     t = pygame.time.get_ticks()
+    pygame.time.wait(15)
     delta = t - oldT
 
     # render text

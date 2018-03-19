@@ -18,7 +18,7 @@ class Asteroid(pygame.sprite.Sprite):
 
         self.name = "a" + str(Asteroid.nextAsteroidNumber)
         Asteroid.nextAsteroidNumber += 1
-        self.pos = np.array((x, y))
+        self.pos = np.array((x, y)).astype(float)
         self.radius = radius
         self.color = color
         self.mass = 100 * self.radius ** 2
@@ -35,8 +35,7 @@ class Asteroid(pygame.sprite.Sprite):
                            int(self.radius + self.radius * math.sin(i * 2 * math.pi / 12.0))) for i in range(12)]
 
         self.rect = pygame.draw.polygon(self.image, self.color, vectorList, 5)
-        self.rect.x = self.pos[0] - self.radius
-        self.rect.y = self.pos[1] - self.radius
+        self.rect.center = (self.pos[0], self.pos[1])
 
         self.mask = pygame.mask.from_surface(self.image)
 

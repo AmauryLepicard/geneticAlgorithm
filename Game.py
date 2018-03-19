@@ -7,6 +7,7 @@ import pygame
 
 from Asteroid import Asteroid
 from Parameters import *
+from Ship import Ship
 
 
 class Game:
@@ -14,8 +15,13 @@ class Game:
     def __init__(self, screen, area, asteroidsNumber):
         self.screen = screen
         self.area = area
+
         self.asteroids = pygame.sprite.Group()
         self.createAsteroids(asteroidsNumber)
+
+        self.ship = pygame.sprite.GroupSingle()
+        self.ship.sprite = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5),
+                                color=(255, 255, 255), speed=0.2, theta=math.pi * 0.25)
 
     def createAsteroids(self, number):
         # print("Creating", number, "asteroids")
@@ -109,3 +115,6 @@ class Game:
 
         self.asteroids.update(delta)
         self.asteroids.draw(self.screen)
+
+        self.ship.update(delta)
+        self.ship.draw(self.screen)

@@ -1,4 +1,5 @@
 import math
+
 import numpy as np
 import pygame
 
@@ -26,19 +27,15 @@ class Ship(pygame.sprite.Sprite):
 
         self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size, self.size * 2)
         self.rect.center = (self.pos[0], self.pos[1])
-        print(self.rect)
 
         self.mask = pygame.mask.from_surface(self.originalImage)
         self.image = self.originalImage
 
     def update(self, delta):
         self.theta += delta * self.thetaSpeed
-        v = delta * self.speed * np.array([math.cos(self.theta), math.sin(self.theta)])
-        self.pos += np.array(v)
-        print(v, self.theta, self.pos)
+        self.pos += np.array(delta * self.speed * np.array([math.cos(self.theta), math.sin(self.theta)]))
 
         self.image = pygame.transform.rotozoom(self.originalImage, -self.theta * 180 / math.pi, 1.0)
         self.image.set_colorkey((0, 0, 0))
-        # self.image = pygame.transform.scale(self.image, (self.size, self.size*2))
         self.rect = self.image.get_rect(center=(self.pos[0], self.pos[1]))
         self.mask = pygame.mask.from_surface(self.originalImage)

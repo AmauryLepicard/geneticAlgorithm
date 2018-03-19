@@ -25,6 +25,8 @@ class Game:
                          theta=math.pi * 0.5)
         self.shipGroup = pygame.sprite.GroupSingle(self.ship)
 
+        self.score = 0
+
     def manageInput(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -57,20 +59,25 @@ class Game:
     def update(self, delta):
         self.manageInput()
 
-        if ENABLE_ASTEROID_COLLISION:
-            for a1 in self.asteroids:
+        for a in self.asteroids:
+            # check collision with another asteroid
+            if ENABLE_ASTEROID_COLLISION:
                 for a2 in self.asteroids:
-                    if a1 == a2:
+                    if a == a2:
                         break
-                    if pygame.sprite.collide_mask(a1, a2) is not None:
-                        a1.fixCollisionPositions(a2)
-                        a1.computeCollisionSpeed(a2)
-                        if a1.mass > ASTEROID_MIN_MASS:
-                            self.splitAsteroid(a1)
+                    if pygame.sprite.collide_mask(a, a2) is not None:
+                        a.fixCollisionPositions(a2)
+                        a.computeCollisionSpeed(a2)
+                        if a.mass > ASTEROID_MIN_MASS:
+                            self.splitAsteroid(a)
                         if a2.mass > ASTEROID_MIN_MASS:
                             self.splitAsteroid(a2)
 
-        for a in self.asteroids:
+            # check collision with player's ship
+            if pygame.sprite.collide_mask(a, self.ship) is not None:
+                return -1
+
+            # check if asteroid is out of screen
             if not self.area.colliderect(a):
                 self.asteroids.remove(a)
                 del a

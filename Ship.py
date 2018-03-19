@@ -43,6 +43,7 @@ class Ship(pygame.sprite.Sprite):
         self.rect.center = (self.pos[0], self.pos[1])
 
         self.mask = pygame.mask.from_surface(self.unpoweredShipImage)
+
         self.image = self.unpoweredShipImage
 
     def update(self, delta):

@@ -11,23 +11,26 @@ area = pygame.Rect(-BORDER_SIZE, -BORDER_SIZE, SCREEN_WIDTH + 2 * BORDER_SIZE, S
 
 # text
 myFont = pygame.font.SysFont(None, 30)
+myFont2 = pygame.font.SysFont(None, 200)
 pygame.display.set_caption("Asteroids")
 
 mouseSprite = pygame.sprite.Sprite()
 
 game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
 
-t = pygame.time.get_ticks()
+clock = pygame.time.Clock()
 while 1:
-    oldT = t
-    t = pygame.time.get_ticks()
-    pygame.time.wait(15)
-    delta = t - oldT
+    # update game
+    delta = clock.tick(60)
+
+    # clear screen
+    screen.fill((0, 0, 0))
 
     # render text
-    label = myFont.render(str(len(game.asteroids)), 1, (255, 255, 255))
-
-    screen.fill((0, 0, 0))
+    label = myFont.render("Score: " + str(game.score), 1, (255, 255, 255))
     screen.blit(label, (0, 0))
-    game.update(delta)
+
+    if game.update(delta) == -1:
+        label = myFont2.render("GAME OVER", 1, (255, 255, 255))
+        screen.blit(label, ((SCREEN_WIDTH - label.get_width()) / 2, (SCREEN_HEIGHT - label.get_height()) / 2))
     pygame.display.flip()

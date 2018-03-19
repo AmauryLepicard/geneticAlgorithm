@@ -24,6 +24,8 @@ class Ship(pygame.sprite.Sprite):
 
         self.color = color
 
+        self.firing = False
+
         # unpowered ship image
         self.unpoweredShipImage = pygame.Surface((SHIP_SIZE * 2, SHIP_SIZE + 1))
         self.unpoweredShipImage.set_colorkey((0, 0, 0))
@@ -47,6 +49,7 @@ class Ship(pygame.sprite.Sprite):
         self.image = self.unpoweredShipImage
 
     def update(self, delta):
+
         self.theta += delta * self.thetaSpeed
         thetaVector = np.array([math.cos(self.theta), math.sin(self.theta)])
 

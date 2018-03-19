@@ -79,7 +79,6 @@ class Asteroid(pygame.sprite.Sprite):
     def update(self, delta):
         self.pos[0] += self.speed * math.cos(self.theta) * delta
         self.pos[1] += self.speed * math.sin(self.theta) * delta
-        #self.pos = np.mod(self.pos, np.array([Parameters.SCREEN_WIDTH, Parameters.SCREEN_HEIGHT]))
         self.rect.x = self.pos[0] - self.radius
         self.rect.y = self.pos[1] - self.radius
 

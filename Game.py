@@ -6,6 +6,7 @@ import numpy as np
 import pygame
 
 from Asteroid import Asteroid
+from Bullet import Bullet
 from Parameters import *
 from Ship import Ship
 
@@ -16,8 +17,8 @@ class Game:
         self.screen = screen
         self.area = area
 
-        # create asteroids
-        self.asteroids = pygame.sprite.Group()
+        # create asteroidsGroup
+        self.asteroidsGroup = pygame.sprite.Group()
         self.createAsteroids(asteroidsNumber)
 
         # create player ship
@@ -25,7 +26,11 @@ class Game:
                          theta=math.pi * 0.5)
         self.shipGroup = pygame.sprite.GroupSingle(self.ship)
 
+        # create bullets
+        self.bulletsGroup = pygame.sprite.Group()
+
         self.score = 0
+        self.age = 0
 
     def manageInput(self):
         for event in pygame.event.get():
@@ -33,11 +38,11 @@ class Game:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-                for a in self.asteroids:
+                for a in self.asteroidsGroup:
                     if a.radius > np.linalg.norm(a.pos - np.array(pos)):
                         if a.mass > ASTEROID_MIN_MASS:
                             self.splitAsteroid(a)
-                        self.asteroids.remove(a)
+                        self.asteroidsGroup.remove(a)
                         del a
 
             if event.type == pygame.KEYDOWN:
@@ -47,6 +52,8 @@ class Game:
                     self.ship.thetaSpeed = SHIP_TURN_RATE
                 if event.key == pygame.K_UP:
                     self.ship.acceleration = SHIP_ACCELERATION
+                if event.key == pygame.K_SPACE:
+                    self.ship.firing = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -55,14 +62,19 @@ class Game:
                     self.ship.thetaSpeed = 0.0
                 if event.key == pygame.K_UP:
                     self.ship.acceleration = 0.0
+                if event.key == pygame.K_SPACE:
+                    self.ship.firing = False
 
     def update(self, delta):
+        oldAge = self.age
+        self.age += delta
+
         self.manageInput()
 
-        for a in self.asteroids:
+        for a in self.asteroidsGroup:
             # check collision with another asteroid
             if ENABLE_ASTEROID_COLLISION:
-                for a2 in self.asteroids:
+                for a2 in self.asteroidsGroup:
                     if a == a2:
                         break
                     if pygame.sprite.collide_mask(a, a2) is not None:
@@ -70,8 +82,12 @@ class Game:
                         a.computeCollisionSpeed(a2)
                         if a.mass > ASTEROID_MIN_MASS:
                             self.splitAsteroid(a)
+                        else:
+                            self.destroyAsteroid(a)
                         if a2.mass > ASTEROID_MIN_MASS:
                             self.splitAsteroid(a2)
+                        else:
+                            self.destroyAsteroid(a2)
 
             # check collision with player's ship
             if pygame.sprite.collide_mask(a, self.ship) is not None:
@@ -79,18 +95,42 @@ class Game:
 
             # check if asteroid is out of screen
             if not self.area.colliderect(a):
-                self.asteroids.remove(a)
+                self.asteroidsGroup.remove(a)
                 del a
                 self.createAsteroids(1)
 
-        self.asteroids.update(delta)
-        self.asteroids.draw(self.screen)
+        if self.ship.firing:
+            if (self.age % SHIP_FIRING_RATE) < (oldAge % SHIP_FIRING_RATE):
+                startPoint = self.ship.pos + np.array(
+                    [math.cos(self.ship.theta), math.sin(self.ship.theta)]) * SHIP_SIZE
+
+                b = Bullet(startPoint[0], startPoint[1], (0, 255, 0),
+                           1.0 + np.linalg.norm(self.ship.speedVector), self.ship.theta)
+                self.bulletsGroup.add(b)
+
+        for b in self.bulletsGroup:
+            for a in self.asteroidsGroup:
+                if pygame.sprite.collide_mask(a, b) is not None:
+                    if a.mass > ASTEROID_MIN_MASS:
+                        self.splitAsteroid(a)
+                    else:
+                        self.destroyAsteroid(a)
+                        self.score += 1
+            if not self.area.colliderect(b):
+                self.bulletsGroup.remove(b)
+                del b
+
+        self.asteroidsGroup.update(delta)
+        self.asteroidsGroup.draw(self.screen)
 
         self.ship.update(delta)
         self.shipGroup.draw(self.screen)
 
+        self.bulletsGroup.update(delta)
+        self.bulletsGroup.draw(self.screen)
+
     def createAsteroids(self, number):
-        # print("Creating", number, "asteroids")
+        # print("Creating", number, "asteroidsGroup")
         for i in range(number):
 
             # choose random color
@@ -123,11 +163,11 @@ class Game:
             c = Asteroid(x=x, y=y, radius=random.uniform(20.0, 50.0), color=randColor,
                          speed=ASTEROID_MAX_SPEED * random.uniform(0.5, 1.0), theta=theta)
 
-            self.asteroids.add(c)
+            self.asteroidsGroup.add(c)
 
     def destroyAsteroid(self, a):
         # print("Destroying", a.name)
-        self.asteroids.remove(a)
+        self.asteroidsGroup.remove(a)
         del a
 
     def splitAsteroid(self, a):
@@ -138,8 +178,8 @@ class Game:
         pos2 = a.pos + childRadius * np.array([math.cos(theta2), math.sin(theta2)])
         a1 = Asteroid(pos1[0], pos1[1], childRadius, a.color, a.speed, theta1)
         a2 = Asteroid(pos2[0], pos2[1], childRadius, a.color, a.speed, theta2)
-        self.asteroids.add(a1)
-        self.asteroids.add(a2)
+        self.asteroidsGroup.add(a1)
+        self.asteroidsGroup.add(a2)
         # print("Splitting", a.name, "into", a1.name, ",", a2.name)
         self.destroyAsteroid(a)
 

@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 import Game
 from Parameters import *
@@ -17,20 +18,31 @@ pygame.display.set_caption("Asteroids")
 mouseSprite = pygame.sprite.Sprite()
 
 game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
+gameOver = False
 
 clock = pygame.time.Clock()
-while 1:
-    # update game
-    delta = clock.tick(60)
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            sys.exit()
 
-    # clear screen
-    screen.fill((0, 0, 0))
+    if not gameOver:
+        # update game
+        delta = clock.tick(60)
 
-    # render text
-    label = myFont.render("Score: " + str(game.score), 1, (255, 255, 255))
-    screen.blit(label, (0, 0))
+        # clear screen
+        screen.fill((0, 0, 0))
 
-    if game.update(delta) == -1:
-        label = myFont2.render("GAME OVER", 1, (255, 255, 255))
-        screen.blit(label, ((SCREEN_WIDTH - label.get_width()) / 2, (SCREEN_HEIGHT - label.get_height()) / 2))
-    pygame.display.flip()
+        # render text
+        asteroidsDestroyedLabel = myFont.render("Asteroids destroyed: " + str(game.score), 1, (255, 255, 255))
+        screen.blit(asteroidsDestroyedLabel, (0, 0))
+
+        timeLabel = myFont.render("Time: " + str(game.age), 1, (255, 255, 255))
+        screen.blit(timeLabel, (0, 35))
+
+        if game.update(delta) == -1:
+            label = myFont2.render("GAME OVER", 1, (255, 255, 255))
+            screen.blit(label, ((SCREEN_WIDTH - label.get_width()) / 2, (SCREEN_HEIGHT - label.get_height()) / 2))
+            gameOver = True
+
+        pygame.display.flip()

@@ -21,8 +21,8 @@ class Game:
         self.createAsteroids(asteroidsNumber)
 
         # create player ship
-        self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5),
-                         color=(255, 255, 255), speed=0, theta=0)
+        self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1,
+                         theta=math.pi * 0.5)
         self.shipGroup = pygame.sprite.GroupSingle(self.ship)
 
     def manageInput(self):
@@ -40,11 +40,11 @@ class Game:
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.ship.thetaSpeed = -0.001
+                    self.ship.thetaSpeed = -0.002
                 if event.key == pygame.K_RIGHT:
-                    self.ship.thetaSpeed = 0.001
+                    self.ship.thetaSpeed = 0.002
                 if event.key == pygame.K_UP:
-                    self.ship.acceleration = 0.002
+                    self.ship.acceleration = 0.0005
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:

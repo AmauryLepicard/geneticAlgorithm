@@ -44,7 +44,7 @@ class Game:
                 if event.key == pygame.K_RIGHT:
                     self.ship.thetaSpeed = 0.001
                 if event.key == pygame.K_UP:
-                    self.ship.speed = 0.2
+                    self.ship.acceleration = 0.002
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -52,7 +52,7 @@ class Game:
                 if event.key == pygame.K_RIGHT:
                     self.ship.thetaSpeed = 0.0
                 if event.key == pygame.K_UP:
-                    self.ship.speed = 0.0
+                    self.ship.acceleration = 0.0
 
     def update(self, delta):
         self.manageInput()

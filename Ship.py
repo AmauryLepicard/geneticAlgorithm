@@ -13,11 +13,11 @@ class Ship(pygame.sprite.Sprite):
         self.theta = theta
 
         self.speed = speed
-        self.thetaSpeed = 0.001
+        self.thetaSpeed = 0.0
         self.color = color
 
         self.size = 30
-        self.originalImage = pygame.Surface((self.size * 2, self.size))
+        self.originalImage = pygame.Surface((self.size * 2, self.size + 1))
         self.originalImage.set_colorkey((0, 0, 0))
 
         pygame.draw.aalines(self.originalImage, self.color, False,

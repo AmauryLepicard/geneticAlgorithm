@@ -53,7 +53,7 @@ class Game:
                 if event.key == pygame.K_UP:
                     self.ship.acceleration = SHIP_ACCELERATION
                 if event.key == pygame.K_SPACE:
-                    self.ship.firing = True
+                    self.ship.toggleFire(True)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -63,7 +63,7 @@ class Game:
                 if event.key == pygame.K_UP:
                     self.ship.acceleration = 0.0
                 if event.key == pygame.K_SPACE:
-                    self.ship.firing = False
+                    self.ship.toggleFire(False)
 
     def update(self, delta):
         oldAge = self.age
@@ -91,7 +91,7 @@ class Game:
 
             # check collision with player's ship
             if pygame.sprite.collide_mask(a, self.ship) is not None:
-                return -1
+                return True
 
             # check if asteroid is out of screen
             if not self.area.colliderect(a):
@@ -100,7 +100,7 @@ class Game:
                 self.createAsteroids(1)
 
         if self.ship.firing:
-            if (self.age % SHIP_FIRING_RATE) < (oldAge % SHIP_FIRING_RATE):
+            if (self.age - self.ship.firingStartDate) % SHIP_FIRING_RATE < (oldAge - self.ship.firingStartDate) % SHIP_FIRING_RATE:
                 startPoint = self.ship.pos + np.array(
                     [math.cos(self.ship.theta), math.sin(self.ship.theta)]) * SHIP_SIZE
 

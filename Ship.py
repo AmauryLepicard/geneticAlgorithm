@@ -25,6 +25,7 @@ class Ship(pygame.sprite.Sprite):
         self.color = color
 
         self.firing = False
+        self.firingStartDate = -1
 
         # unpowered ship image
         self.unpoweredShipImage = pygame.Surface((SHIP_SIZE * 2, SHIP_SIZE + 1))
@@ -67,3 +68,7 @@ class Ship(pygame.sprite.Sprite):
         self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect(center=(self.pos[0], self.pos[1]))
         self.mask = pygame.mask.from_surface(self.unpoweredShipImage)
+
+    def toggleFire(self, toggle):
+        self.firingStartDate = pygame.time.get_ticks()
+        self.firing = toggle

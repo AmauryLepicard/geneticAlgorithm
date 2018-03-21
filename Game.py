@@ -32,38 +32,53 @@ class Game:
         self.score = 0
         self.age = 0
 
+        self.isOver = False
+
     def manageInput(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONUP:
-                pos = pygame.mouse.get_pos()
-                for a in self.asteroidsGroup:
-                    if a.radius > np.linalg.norm(a.pos - np.array(pos)):
-                        if a.mass > ASTEROID_MIN_MASS:
-                            self.splitAsteroid(a)
-                        self.asteroidsGroup.remove(a)
-                        del a
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.ship.thetaSpeed = -SHIP_TURN_RATE
-                if event.key == pygame.K_RIGHT:
-                    self.ship.thetaSpeed = SHIP_TURN_RATE
-                if event.key == pygame.K_UP:
-                    self.ship.acceleration = SHIP_ACCELERATION
-                if event.key == pygame.K_SPACE:
-                    self.ship.toggleFire(True)
+#            if event.type == pygame.MOUSEBUTTONUP:
+#                pos = pygame.mouse.get_pos()
+#                for a in self.asteroidsGroup:
+#                    if a.radius > np.linalg.norm(a.pos - np.array(pos)):
+#    #                    if a.mass > ASTEROID_MIN_MASS:
+#                            self.splitAsteroid(a)
+#                        self.asteroidsGroup.remove(a)
+#                        del a
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    self.ship.thetaSpeed = 0.0
-                if event.key == pygame.K_RIGHT:
-                    self.ship.thetaSpeed = 0.0
-                if event.key == pygame.K_UP:
-                    self.ship.acceleration = 0.0
-                if event.key == pygame.K_SPACE:
-                    self.ship.toggleFire(False)
+            if not SHIP_USE_MOUSE:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        self.ship.thetaSpeed = -SHIP_TURN_RATE
+                    if event.key == pygame.K_RIGHT:
+                        self.ship.thetaSpeed = SHIP_TURN_RATE
+                    if event.key == pygame.K_UP:
+                        self.ship.acceleration = SHIP_ACCELERATION
+                    if event.key == pygame.K_SPACE:
+                        self.ship.toggleFire(True)
+
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_LEFT:
+                        self.ship.thetaSpeed = 0.0
+                    if event.key == pygame.K_RIGHT:
+                        self.ship.thetaSpeed = 0.0
+                    if event.key == pygame.K_UP:
+                        self.ship.acceleration = 0.0
+                    if event.key == pygame.K_SPACE:
+                        self.ship.toggleFire(False)
+            else:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if pygame.mouse.get_pressed()[0]==1:
+                        self.ship.toggleFire(True)
+                    if pygame.mouse.get_pressed()[2]==1:
+                        self.ship.acceleration = SHIP_ACCELERATION
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if pygame.mouse.get_pressed()[0]==0:
+                        self.ship.toggleFire(False)
+                    if pygame.mouse.get_pressed()[2]==0:
+                        self.ship.acceleration = 0.0
 
     def update(self, delta):
         oldAge = self.age
@@ -91,7 +106,7 @@ class Game:
 
             # check collision with player's ship
             if pygame.sprite.collide_mask(a, self.ship) is not None:
-                return True
+                self.isOver = True
 
             # check if asteroid is out of screen
             if not self.area.colliderect(a):
@@ -100,7 +115,7 @@ class Game:
                 self.createAsteroids(1)
 
         if self.ship.firing:
-            if (self.age - self.ship.firingStartDate) % SHIP_FIRING_RATE < (oldAge - self.ship.firingStartDate) % SHIP_FIRING_RATE:
+            if ((self.age-self.ship.firingStartDate) % SHIP_FIRING_RATE) < ((oldAge - self.ship.firingStartDate) % SHIP_FIRING_RATE):
                 startPoint = self.ship.pos + np.array(
                     [math.cos(self.ship.theta), math.sin(self.ship.theta)]) * SHIP_SIZE
 
@@ -116,6 +131,7 @@ class Game:
                     else:
                         self.destroyAsteroid(a)
                         self.score += 1
+                        self.createAsteroids(1)
             if not self.area.colliderect(b):
                 self.bulletsGroup.remove(b)
                 del b

@@ -25,7 +25,7 @@ class Ship(pygame.sprite.Sprite):
         self.color = color
 
         self.firing = False
-        self.firingStartDate = -1
+        self.firingStartDate = -1.0
 
         # unpowered ship image
         self.unpoweredShipImage = pygame.Surface((SHIP_SIZE * 2, SHIP_SIZE + 1))
@@ -50,9 +50,13 @@ class Ship(pygame.sprite.Sprite):
         self.image = self.unpoweredShipImage
 
     def update(self, delta):
-
-        self.theta += delta * self.thetaSpeed
-        thetaVector = np.array([math.cos(self.theta), math.sin(self.theta)])
+        if SHIP_USE_MOUSE:
+            thetaVector = pygame.mouse.get_pos() - self.pos
+            thetaVector /= np.linalg.norm(thetaVector)
+            self.theta = math.atan2(thetaVector[1], thetaVector[0])
+        else:
+            self.theta += delta * self.thetaSpeed
+            thetaVector = np.array([math.cos(self.theta), math.sin(self.theta)])
 
         self.speedVector += delta * self.acceleration * thetaVector
         self.speedVector *= SHIP_DRAG_COEFF
@@ -70,5 +74,6 @@ class Ship(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.unpoweredShipImage)
 
     def toggleFire(self, toggle):
-        self.firingStartDate = pygame.time.get_ticks()
         self.firing = toggle
+        if toggle:
+            self.firingStartDate = pygame.time.get_ticks()

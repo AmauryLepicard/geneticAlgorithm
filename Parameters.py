@@ -18,4 +18,4 @@ SHIP_TURN_RATE = 0.002
 SHIP_SIZE = 30
 SHIP_FIRING_RATE = 250  # 500ms delay between shots
 
-SHIP_USE_MOUSE = True
+SHIP_USE_MOUSE = False

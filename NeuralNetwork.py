@@ -5,11 +5,11 @@ class NeuralNetwork:
     def __init__(self, nbInputs, hiddenLayersSizes, nbOutputs, activationFunction):
         self.nbInputs = nbInputs
         self.nbOutputs = nbOutputs
-        layers = [NNLayer(nbInputs, hiddenLayersSizes[0], activationFunction)]
+        self.layers = [NNLayer(nbInputs, hiddenLayersSizes[0], activationFunction)]
         for layerNb, neuronsNb in enumerate(hiddenLayersSizes):
-            hiddenLayer = NNLayer(layers[layerNb-1].neuronsNb, neuronsNb, activationFunction)
-            layers.append(hiddenLayer)
-        layers.append(NNLayer(layers[-1].neuronsNb, nbOutputs, activationFunction))
+            hiddenLayer = NNLayer(self.layers[layerNb-1].neuronsNb, neuronsNb, activationFunction)
+            self.layers.append(hiddenLayer)
+        self.layers.append(NNLayer(self.layers[-1].neuronsNb, nbOutputs, activationFunction))
 
     def compute(self, inputVector):
         if inputVector.shape != (1, self.nbInputs):

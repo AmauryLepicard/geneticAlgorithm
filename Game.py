@@ -10,7 +10,6 @@ from Bullet import Bullet
 from Parameters import *
 from Ship import Ship
 
-
 class Game:
 
     def __init__(self, screen, area, asteroidsNumber):
@@ -38,15 +37,6 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 sys.exit()
-
-#            if event.type == pygame.MOUSEBUTTONUP:
-#                pos = pygame.mouse.get_pos()
-#                for a in self.asteroidsGroup:
-#                    if a.radius > np.linalg.norm(a.pos - np.array(pos)):
-#    #                    if a.mass > ASTEROID_MIN_MASS:
-#                            self.splitAsteroid(a)
-#                        self.asteroidsGroup.remove(a)
-#                        del a
 
             if not SHIP_USE_MOUSE:
                 if event.type == pygame.KEYDOWN:

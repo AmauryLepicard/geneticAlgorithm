@@ -24,7 +24,7 @@ mouseSprite = pygame.sprite.Sprite()
 #game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
 def restartGame():
     global game
-    game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
+    game = Game.Game(area, asteroidsNumber=ASTEROID_NUMBER)
 restartGame()
 
 player = AIPlayer.AIPlayer(game)
@@ -59,7 +59,30 @@ while True:
         gameOver = True
 
     if not game.isOver:
+        #update game model
         game.update(delta)
         player.update(delta)
+
+        #draw game
+        game.asteroidsGroup.update(delta)
+        game.asteroidsGroup.draw(screen)
+
+        game.ship.update(delta)
+        game.shipGroup.draw(screen)
+
+        game.bulletsGroup.update(delta)
+        game.bulletsGroup.draw(screen)
+
+        # show quadrant lines#
+        #        nbQuadrants = 8
+        #        for i in range(nbQuadrants):
+        #            angle = game.ship.theta + (i+0.5)*2*math.pi/nbQuadrants
+        #            delta = np.array((2000*math.cos(angle), 2000*math.sin(angle)))
+        #            pygame.draw.aaline(screen, (100,100,100), game.ship.pos, game.ship.pos+delta)
+
+        timeLabel = myFont30.render("Input: " + str(player.inputVector), 1, (255, 255, 255))
+        screen.blit(timeLabel, (0, 70))
+        timeLabel = myFont30.render("Output: " + str(player.commands), 1, (255, 255, 255))
+        screen.blit(timeLabel, (0, 100))
 
     pygame.display.flip()

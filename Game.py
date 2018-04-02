@@ -12,8 +12,7 @@ from Ship import Ship
 
 class Game:
 
-    def __init__(self, screen, area, asteroidsNumber):
-        self.screen = screen
+    def __init__(self, area, asteroidsNumber):
         self.area = area
 
         # create asteroidsGroup
@@ -136,15 +135,6 @@ class Game:
             if not self.area.colliderect(b):
                 self.bulletsGroup.remove(b)
                 del b
-
-        self.asteroidsGroup.update(delta)
-        self.asteroidsGroup.draw(self.screen)
-
-        self.ship.update(delta)
-        self.shipGroup.draw(self.screen)
-
-        self.bulletsGroup.update(delta)
-        self.bulletsGroup.draw(self.screen)
 
     def createAsteroids(self, number):
         # print("Creating", number, "asteroidsGroup")

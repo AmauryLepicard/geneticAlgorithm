@@ -47,7 +47,7 @@ class AIPlayer:
         self.inputVector = 100.0 / distances
         self.commands = self.neuralNetwork.compute(self.inputVector)
         self.commands = np.clip(self.commands, -1.0, 1.0)
-        print(self.inputVector, self.commands)
+        #print(self.inputVector, self.commands)
 
         # send self.commands to game
         # rotation command

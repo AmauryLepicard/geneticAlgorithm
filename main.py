@@ -2,6 +2,7 @@ import pygame
 import sys
 
 import Game
+import AIPlayer
 from Parameters import *
 
 pygame.init()
@@ -24,6 +25,7 @@ def restartGame():
     game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
 restartGame()
 
+player = AIPlayer.AIPlayer(game)
 clock = pygame.time.Clock()
 while True:
     for event in pygame.event.get():
@@ -56,5 +58,6 @@ while True:
 
     if not game.isOver:
         game.update(delta)
+        player.update(delta)
 
     pygame.display.flip()

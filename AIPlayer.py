@@ -2,21 +2,22 @@ from NeuralNetwork import NeuralNetwork
 import numpy as np
 import math
 from Parameters import *
-import pygame
 
-def relu(x):
-    return max(0.0, x)
+np.set_printoptions(precision=2, suppress=True)
 
 class AIPlayer:
     def __init__(self, game):
-        self.nn = NeuralNetwork(8, (6, 6), 3, relu)
-
+        self.neuralNetwork = NeuralNetwork(8, [3], 3)
+        #print(self.neuralNetwork)
         # game to get data from and send input to
         self.game = game
+
+        # keep input and output to print them on screen
+        self.inputVector = np.zeros(8)
         self.commands = np.zeros(3)
 
     def DNA(self):
-        return self.nn.DNA()
+        return self.neuralNetwork.DNA()
 
     def update(self, delta):
         # get environment data from game
@@ -43,17 +44,19 @@ class AIPlayer:
             distances[quadrantIndex] = min(distances[quadrantIndex], distance)
 
         # compute commands
-        danger = 10.0 / distances
-        self.commands = np.clip(self.nn.compute(danger), -1.0, 1.0)
-        self.commands[1] = np.round(self.commands[1])
+        self.inputVector = 100.0 / distances
+        self.commands = self.neuralNetwork.compute(self.inputVector)
+        self.commands = np.clip(self.commands, -1.0, 1.0)
+        print(self.inputVector, self.commands)
 
         # send self.commands to game
-        if self.commands[0] > 0.0:
-            self.game.ship.thetaSpeed =-SHIP_TURN_RATE * self.commands[0]
-        elif self.commands[0] < 0.0:
-            self.game.ship.thetaSpeed = SHIP_TURN_RATE * self.commands[0]
-        else:
-            self.game.ship.thetaSpeed = 0.0
-        self.game.ship.acceleration = self.commands[1] * SHIP_ACCELERATION
-        self.game.ship.toggleFire(self.commands[2] >= 1.0)
+        # rotation command
+        self.game.ship.thetaSpeed = SHIP_TURN_RATE * self.commands[0]
+
+        # acceleration command
+        self.commands[1] = np.round(self.commands[1])
+        self.game.ship.acceleration = max(0.0, self.commands[1]) * SHIP_ACCELERATION
+
+        # firing command
+        self.game.ship.toggleFire(self.commands[2] >= 0.0)
 

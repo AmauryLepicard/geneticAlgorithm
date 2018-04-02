@@ -1,5 +1,7 @@
 import pygame
 import sys
+import math
+import numpy as np
 
 import Game
 import AIPlayer

@@ -21,8 +21,7 @@ class Game:
         self.createAsteroids(asteroidsNumber)
 
         # create player ship
-        self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1,
-                         theta=math.pi * 0.5)
+        self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1, theta=0.0)
         self.shipGroup = pygame.sprite.GroupSingle(self.ship)
 
         # create bullets
@@ -34,41 +33,53 @@ class Game:
         self.isOver = False
 
     def manageInput(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                sys.exit()
-
-            if not SHIP_USE_MOUSE:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        self.ship.thetaSpeed = -SHIP_TURN_RATE
-                    if event.key == pygame.K_RIGHT:
-                        self.ship.thetaSpeed = SHIP_TURN_RATE
-                    if event.key == pygame.K_UP:
-                        self.ship.acceleration = SHIP_ACCELERATION
-                    if event.key == pygame.K_SPACE:
-                        self.ship.toggleFire(True)
-
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_LEFT:
-                        self.ship.thetaSpeed = 0.0
-                    if event.key == pygame.K_RIGHT:
-                        self.ship.thetaSpeed = 0.0
-                    if event.key == pygame.K_UP:
-                        self.ship.acceleration = 0.0
-                    if event.key == pygame.K_SPACE:
-                        self.ship.toggleFire(False)
+        if not SHIP_USING_NEURAL_NETWORK:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                self.ship.thetaSpeed =-SHIP_TURN_RATE
+            elif keys[pygame.K_RIGHT]:
+                self.ship.thetaSpeed = SHIP_TURN_RATE
             else:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if pygame.mouse.get_pressed()[0]==1:
-                        self.ship.toggleFire(True)
-                    if pygame.mouse.get_pressed()[2]==1:
-                        self.ship.acceleration = SHIP_ACCELERATION
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if pygame.mouse.get_pressed()[0]==0:
-                        self.ship.toggleFire(False)
-                    if pygame.mouse.get_pressed()[2]==0:
-                        self.ship.acceleration = 0.0
+                self.ship.thetaSpeed = 0.0
+            self.ship.acceleration = keys[pygame.K_UP] * SHIP_ACCELERATION
+            self.ship.toggleFire(keys[pygame.K_SPACE])
+
+#        for event in pygame.event.get():
+#            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+#                sys.exit()
+#
+#            if not SHIP_USE_MOUSE:
+#                if event.type == pygame.KEYDOWN:
+#                    if event.key == pygame.K_LEFT:
+#                        self.ship.thetaSpeed = -SHIP_TURN_RATE
+#                    if event.key == pygame.K_RIGHT:
+#                        self.ship.thetaSpeed = SHIP_TURN_RATE
+#                    if event.key == pygame.K_UP:
+#                        self.ship.acceleration = SHIP_ACCELERATION
+#                    if event.key == pygame.K_SPACE:
+#                        self.ship.toggleFire(True)
+#
+#                if event.type == pygame.KEYUP:
+#                    if event.key == pygame.K_LEFT:
+#                        self.ship.thetaSpeed = 0.0
+#                    if event.key == pygame.K_RIGHT:
+#                        self.ship.thetaSpeed = 0.0
+#                    if event.key == pygame.K_UP:
+#                        self.ship.acceleration = 0.0
+#                    if event.key == pygame.K_SPACE:
+#                        self.ship.toggleFire(False)
+#            else:
+#                if event.type == pygame.MOUSEBUTTONDOWN:
+#                    if pygame.mouse.get_pressed()[0]==1:
+#                        self.ship.toggleFire(True)
+#                    if pygame.mouse.get_pressed()[2]==1:
+#                        self.ship.acceleration = SHIP_ACCELERATION
+#                if event.type == pygame.MOUSEBUTTONUP:
+#                    if pygame.mouse.get_pressed()[0]==0:
+#                        self.ship.toggleFire(False)
+#                    if pygame.mouse.get_pressed()[2]==0:
+#                        self.ship.acceleration = 0.0
+#
 
     def update(self, delta):
         oldAge = self.age

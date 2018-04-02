@@ -74,6 +74,8 @@ class Ship(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.unpoweredShipImage)
 
     def toggleFire(self, toggle):
+        oldFiring = self.firing
         self.firing = toggle
-        if toggle:
-            self.firingStartDate = pygame.time.get_ticks()
+        if toggle != oldFiring:
+            if toggle:
+                self.firingStartDate = pygame.time.get_ticks()

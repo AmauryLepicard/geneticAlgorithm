@@ -1,6 +1,5 @@
 import math
 import random
-import sys
 
 import numpy as np
 import pygame
@@ -9,6 +8,7 @@ from Asteroid import Asteroid
 from Bullet import Bullet
 from Parameters import *
 from Ship import Ship
+
 
 class Game:
 
@@ -20,7 +20,8 @@ class Game:
         self.createAsteroids(asteroidsNumber)
 
         # create player ship
-        self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1, theta=0.0)
+        self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1,
+                         theta=0.0)
         self.shipGroup = pygame.sprite.GroupSingle(self.ship)
 
         # create bullets
@@ -35,7 +36,7 @@ class Game:
         if not SHIP_USING_NEURAL_NETWORK:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
-                self.ship.thetaSpeed =-SHIP_TURN_RATE
+                self.ship.thetaSpeed = -SHIP_TURN_RATE
             elif keys[pygame.K_RIGHT]:
                 self.ship.thetaSpeed = SHIP_TURN_RATE
             else:
@@ -43,42 +44,42 @@ class Game:
             self.ship.acceleration = keys[pygame.K_UP] * SHIP_ACCELERATION
             self.ship.toggleFire(keys[pygame.K_SPACE])
 
-#        for event in pygame.event.get():
-#            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-#                sys.exit()
-#
-#            if not SHIP_USE_MOUSE:
-#                if event.type == pygame.KEYDOWN:
-#                    if event.key == pygame.K_LEFT:
-#                        self.ship.thetaSpeed = -SHIP_TURN_RATE
-#                    if event.key == pygame.K_RIGHT:
-#                        self.ship.thetaSpeed = SHIP_TURN_RATE
-#                    if event.key == pygame.K_UP:
-#                        self.ship.acceleration = SHIP_ACCELERATION
-#                    if event.key == pygame.K_SPACE:
-#                        self.ship.toggleFire(True)
-#
-#                if event.type == pygame.KEYUP:
-#                    if event.key == pygame.K_LEFT:
-#                        self.ship.thetaSpeed = 0.0
-#                    if event.key == pygame.K_RIGHT:
-#                        self.ship.thetaSpeed = 0.0
-#                    if event.key == pygame.K_UP:
-#                        self.ship.acceleration = 0.0
-#                    if event.key == pygame.K_SPACE:
-#                        self.ship.toggleFire(False)
-#            else:
-#                if event.type == pygame.MOUSEBUTTONDOWN:
-#                    if pygame.mouse.get_pressed()[0]==1:
-#                        self.ship.toggleFire(True)
-#                    if pygame.mouse.get_pressed()[2]==1:
-#                        self.ship.acceleration = SHIP_ACCELERATION
-#                if event.type == pygame.MOUSEBUTTONUP:
-#                    if pygame.mouse.get_pressed()[0]==0:
-#                        self.ship.toggleFire(False)
-#                    if pygame.mouse.get_pressed()[2]==0:
-#                        self.ship.acceleration = 0.0
-#
+    #        for event in pygame.event.get():
+    #            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+    #                sys.exit()
+    #
+    #            if not SHIP_USE_MOUSE:
+    #                if event.type == pygame.KEYDOWN:
+    #                    if event.key == pygame.K_LEFT:
+    #                        self.ship.thetaSpeed = -SHIP_TURN_RATE
+    #                    if event.key == pygame.K_RIGHT:
+    #                        self.ship.thetaSpeed = SHIP_TURN_RATE
+    #                    if event.key == pygame.K_UP:
+    #                        self.ship.acceleration = SHIP_ACCELERATION
+    #                    if event.key == pygame.K_SPACE:
+    #                        self.ship.toggleFire(True)
+    #
+    #                if event.type == pygame.KEYUP:
+    #                    if event.key == pygame.K_LEFT:
+    #                        self.ship.thetaSpeed = 0.0
+    #                    if event.key == pygame.K_RIGHT:
+    #                        self.ship.thetaSpeed = 0.0
+    #                    if event.key == pygame.K_UP:
+    #                        self.ship.acceleration = 0.0
+    #                    if event.key == pygame.K_SPACE:
+    #                        self.ship.toggleFire(False)
+    #            else:
+    #                if event.type == pygame.MOUSEBUTTONDOWN:
+    #                    if pygame.mouse.get_pressed()[0]==1:
+    #                        self.ship.toggleFire(True)
+    #                    if pygame.mouse.get_pressed()[2]==1:
+    #                        self.ship.acceleration = SHIP_ACCELERATION
+    #                if event.type == pygame.MOUSEBUTTONUP:
+    #                    if pygame.mouse.get_pressed()[0]==0:
+    #                        self.ship.toggleFire(False)
+    #                    if pygame.mouse.get_pressed()[2]==0:
+    #                        self.ship.acceleration = 0.0
+    #
 
     def update(self, delta):
         oldAge = self.age
@@ -115,7 +116,8 @@ class Game:
                 self.createAsteroids(1)
 
         if self.ship.firing:
-            if ((self.age-self.ship.firingStartDate) % SHIP_FIRING_RATE) < ((oldAge - self.ship.firingStartDate) % SHIP_FIRING_RATE):
+            if ((self.age - self.ship.firingStartDate) % SHIP_FIRING_RATE) < (
+                    (oldAge - self.ship.firingStartDate) % SHIP_FIRING_RATE):
                 startPoint = self.ship.pos + np.array(
                     [math.cos(self.ship.theta), math.sin(self.ship.theta)]) * SHIP_SIZE
 
@@ -147,6 +149,8 @@ class Game:
             # choose position outside of screen
             # First choose one of the 4 borders
             border = random.randint(0, 3)
+            x = -1
+            y = -1
             if border == 0:  # left border
                 x = random.uniform(0, BORDER_SIZE)
                 y = random.uniform(0, SCREEN_HEIGHT + 2 * BORDER_SIZE)
@@ -189,4 +193,3 @@ class Game:
         self.asteroidsGroup.add(a2)
         # print("Splitting", a.name, "into", a1.name, ",", a2.name)
         self.destroyAsteroid(a)
-

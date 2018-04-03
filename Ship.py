@@ -14,11 +14,11 @@ class Ship(pygame.sprite.Sprite):
         # position
         self.pos = np.array([x, y]).astype(float)
 
-        #speed
+        # speed
         self.theta = theta
         self.speedVector = np.array([speed * math.cos(self.theta), speed * math.sin(self.theta)])
 
-        #acceleration
+        # acceleration
         self.thetaSpeed = 0.0
         self.acceleration = 0.0
 

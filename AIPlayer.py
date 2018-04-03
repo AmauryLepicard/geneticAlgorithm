@@ -5,10 +5,12 @@ from Parameters import *
 
 np.set_printoptions(precision=2, suppress=True)
 
+
 class AIPlayer:
     def __init__(self, game):
         self.neuralNetwork = NeuralNetwork(8, [3], 3)
-        #print(self.neuralNetwork)
+
+        # print(self.neuralNetwork)
         # game to get data from and send input to
         self.game = game
 
@@ -21,13 +23,14 @@ class AIPlayer:
 
     def update(self, delta):
         # get environment data from game
-        nbQuadrants = 8 # number of quadrants in the front 180° arc
+        nbQuadrants = 8  # number of quadrants in the front 180° arc
         distances = math.inf * np.ones(nbQuadrants)
 
-        #compute referential change matrix for the ship
-        rotMatrix = np.array([[math.cos(self.game.ship.theta), math.sin(self.game.ship.theta)], [-math.sin(self.game.ship.theta), math.cos(self.game.ship.theta)]])
+        # compute referential change matrix for the ship
+        rotMatrix = np.array([[math.cos(self.game.ship.theta), math.sin(self.game.ship.theta)],
+                              [-math.sin(self.game.ship.theta), math.cos(self.game.ship.theta)]])
 
-        #print("Ship angle:", self.game.ship.theta, "Rotation Matrix:", rotMatrix.flatten())
+        # print("Ship angle:", self.game.ship.theta, "Rotation Matrix:", rotMatrix.flatten())
         for a in self.game.asteroidsGroup:
             # compute the asteroid coordinates in the ship's referential
             deltaPos = a.pos - self.game.ship.pos
@@ -36,18 +39,18 @@ class AIPlayer:
             # find in which quadrant is the asteroid
             relativeAngle = np.arctan2(deltaPos1[1], deltaPos1[0])
             quadrantIndex = int(round(relativeAngle / (math.pi * 2 / nbQuadrants)) % nbQuadrants)
-#           print("Angle:", relativeAngle, "Rounded:", round(relativeAngle / (math.pi * 2 / nbQuadrants)), "Quadrant:", quadrantIndex,"\n", end="", flush=True)
+            #           print("Angle:", relativeAngle, "Rounded:", round(relativeAngle / (math.pi * 2 / nbQuadrants)), "Quadrant:", quadrantIndex,"\n", end="", flush=True)
 
-            #compute the distance and update NN inputs
+            # compute the distance and update NN inputs
             distance = np.linalg.norm(deltaPos1)
-            #print("Asteroid", a.name ,"in quadrant ",self.quadrantIndex, "at", distance)
+            # print("Asteroid", a.name ,"in quadrant ",self.quadrantIndex, "at", distance)
             distances[quadrantIndex] = min(distances[quadrantIndex], distance)
 
         # compute commands
         self.inputVector = 100.0 / distances
         self.commands = self.neuralNetwork.compute(self.inputVector)
         self.commands = np.clip(self.commands, -1.0, 1.0)
-        #print(self.inputVector, self.commands)
+        # print(self.inputVector, self.commands)
 
         # send self.commands to game
         # rotation command
@@ -59,4 +62,3 @@ class AIPlayer:
 
         # firing command
         self.game.ship.toggleFire(self.commands[2] >= 0.0)
-

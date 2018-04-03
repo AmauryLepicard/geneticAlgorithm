@@ -7,4 +7,5 @@ def functionTimer(f):
         f(*args, **kwargs)
         end = datetime.datetime.now()
         print(f.__name__, "executed in ", (end - start).microseconds)
+
     return wrapper

@@ -1,10 +1,9 @@
-import pygame
 import sys
-import math
-import numpy as np
 
-import Game
+import pygame
+
 import AIPlayer
+import Game
 from Parameters import *
 
 pygame.init()
@@ -21,10 +20,13 @@ pygame.display.set_caption("Asteroids")
 
 mouseSprite = pygame.sprite.Sprite()
 
-#game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
+
+# game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
 def restartGame():
     global game
     game = Game.Game(area, asteroidsNumber=ASTEROID_NUMBER)
+
+
 restartGame()
 
 player = AIPlayer.AIPlayer(game)
@@ -59,11 +61,11 @@ while True:
         gameOver = True
 
     if not game.isOver:
-        #update game model
+        # update game model
         game.update(delta)
         player.update(delta)
 
-        #draw game
+        # draw game
         game.asteroidsGroup.update(delta)
         game.asteroidsGroup.draw(screen)
 

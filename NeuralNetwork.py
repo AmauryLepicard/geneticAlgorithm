@@ -39,10 +39,19 @@ class NeuralNetwork:
     def DNA(self):
         return np.concatenate([l.weights.flatten() for l in self.layers])
 
+    def setFromDNA(self, dna: np.array):
+        # check DNA has enough values
+        if len(dna) != sum(l.weights.size for l in self.layers):
+            print("Incorrect DNA size, is ", len(dna), ",should be", sum(l.weights.size for l in self.layers))
+        for layer in self.layers:
+            layerWeights = dna[:layer.weights.size]
+            dna = dna[layer.weights.size:]
+            layer.weights = layerWeights.reshape(layer.weights.shape)
+
     def __str__(self):
         s = ""
         for il, layer in enumerate(self.layers):
-            s += "Layer " + str(il) + " (" + str(layer.inputNb) + "," + str(layer.neuronsNb) + "):\n"
+            s += "Layer " + str(il) + " (" + str(layer.inputNb+1) + "," + str(layer.neuronsNb) + "):\n"
             df = pd.DataFrame(layer.weights)
             s += df.to_string(header=False, index=False) + "\n\n"
         return s

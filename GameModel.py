@@ -10,14 +10,33 @@ from Parameters import *
 from Ship import Ship
 
 
-class Game:
+class GameModel:
 
     def __init__(self, area, asteroidsNumber):
         self.area = area
 
         # create asteroidsGroup
+        self.asteroidNumber = asteroidsNumber
         self.asteroidsGroup = pygame.sprite.Group()
-        self.createAsteroids(asteroidsNumber)
+        self.createAsteroids(self.asteroidNumber)
+
+        # create player ship
+        self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1,
+                         theta=0.0)
+        self.shipGroup = pygame.sprite.GroupSingle(self.ship)
+
+        # create bullets
+        self.bulletsGroup = pygame.sprite.Group()
+
+        self.score = 0
+        self.age = 0
+
+        self.isOver = False
+
+    def restart(self):
+        # create asteroidsGroup
+        self.asteroidsGroup = pygame.sprite.Group()
+        self.createAsteroids(self.asteroidNumber)
 
         # create player ship
         self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1,
@@ -81,11 +100,12 @@ class Game:
     #                        self.ship.acceleration = 0.0
     #
 
-    def update(self, delta):
+    def update(self, delta, useInput=True):
         oldAge = self.age
         self.age += delta
 
-        self.manageInput()
+        if useInput:
+            self.manageInput()
 
         for a in self.asteroidsGroup:
             # check collision with another asteroid
@@ -128,15 +148,19 @@ class Game:
         for b in self.bulletsGroup:
             for a in self.asteroidsGroup:
                 if pygame.sprite.collide_mask(a, b) is not None:
+                    self.score += 1
                     if a.mass > ASTEROID_MIN_MASS:
                         self.splitAsteroid(a)
                     else:
                         self.destroyAsteroid(a)
-                        self.score += 1
                         self.createAsteroids(1)
             if not self.area.colliderect(b):
                 self.bulletsGroup.remove(b)
                 del b
+
+        self.asteroidsGroup.update(delta)
+        self.shipGroup.update(delta)
+        self.bulletsGroup.update(delta)
 
     def createAsteroids(self, number):
         # print("Creating", number, "asteroidsGroup")

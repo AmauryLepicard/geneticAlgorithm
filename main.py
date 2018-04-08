@@ -3,7 +3,7 @@ import sys
 import pygame
 
 import AIPlayer
-import Game
+import GameModel
 from Parameters import *
 
 pygame.init()
@@ -21,13 +21,7 @@ pygame.display.set_caption("Asteroids")
 mouseSprite = pygame.sprite.Sprite()
 
 
-# game = Game.Game(screen, area, asteroidsNumber=ASTEROID_NUMBER)
-def restartGame():
-    global game
-    game = Game.Game(area, asteroidsNumber=ASTEROID_NUMBER)
-
-
-restartGame()
+game = GameModel.GameModel(area, asteroidsNumber=ASTEROID_NUMBER)
 
 player = AIPlayer.AIPlayer(game)
 clock = pygame.time.Clock()
@@ -36,11 +30,11 @@ while True:
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             sys.exit()
         if game.isOver and (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN):
-            restartGame()
+            game.restart()
         if game.isOver and event.type == pygame.MOUSEBUTTONDOWN:
-            restartGame()
+            game.restart()
 
-    # update game
+    # update gameModel
     delta = clock.tick(60)
 
     # clear screen
@@ -61,11 +55,11 @@ while True:
         gameOver = True
 
     if not game.isOver:
-        # update game model
+        # update gameModel model
         game.update(delta)
         player.update(delta)
 
-        # draw game
+        # draw gameModel
         game.asteroidsGroup.update(delta)
         game.asteroidsGroup.draw(screen)
 
@@ -78,9 +72,9 @@ while True:
         # show quadrant lines#
         #        nbQuadrants = 8
         #        for i in range(nbQuadrants):
-        #            angle = game.ship.theta + (i+0.5)*2*math.pi/nbQuadrants
+        #            angle = gameModel.ship.theta + (i+0.5)*2*math.pi/nbQuadrants
         #            delta = np.array((2000*math.cos(angle), 2000*math.sin(angle)))
-        #            pygame.draw.aaline(screen, (100,100,100), game.ship.pos, game.ship.pos+delta)
+        #            pygame.draw.aaline(screen, (100,100,100), gameModel.ship.pos, gameModel.ship.pos+delta)
 
         timeLabel = myFont30.render("Input: " + str(player.inputVector), 1, (255, 255, 255))
         screen.blit(timeLabel, (0, 70))

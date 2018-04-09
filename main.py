@@ -21,7 +21,7 @@ pygame.display.set_caption("Asteroids")
 mouseSprite = pygame.sprite.Sprite()
 
 
-game = GameModel.GameModel(area, asteroidsNumber=ASTEROID_NUMBER)
+game = GameModel.GameModel(0, area, asteroidsNumber=ASTEROID_NUMBER)
 
 player = AIPlayer.AIPlayer(game)
 clock = pygame.time.Clock()

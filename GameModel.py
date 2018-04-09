@@ -12,13 +12,16 @@ from Ship import Ship
 
 class GameModel:
 
-    def __init__(self, area, asteroidsNumber):
+    def __init__(self, randomState, area, asteroidsNumber):
+
+        random.seed(randomState)
         self.area = area
 
         # create asteroidsGroup
         self.asteroidNumber = asteroidsNumber
         self.asteroidsGroup = pygame.sprite.Group()
         self.createAsteroids(self.asteroidNumber)
+        # print([a.pos for a in self.asteroidsGroup.sprites()[:5]])
 
         # create player ship
         self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1,
@@ -34,9 +37,12 @@ class GameModel:
         self.isOver = False
 
     def restart(self):
+        random.seed(0)
+
         # create asteroidsGroup
         self.asteroidsGroup = pygame.sprite.Group()
         self.createAsteroids(self.asteroidNumber)
+        # print([a.pos for a in self.asteroidsGroup.sprites()[:5]])
 
         # create player ship
         self.ship = Ship(x=int(SCREEN_WIDTH * 0.5), y=int(SCREEN_HEIGHT * 0.5), color=(255, 255, 255), speed=0.1,
@@ -197,8 +203,8 @@ class GameModel:
 
             c = Asteroid(x=x, y=y, radius=random.uniform(20.0, 50.0), color=randColor,
                          speed=ASTEROID_MAX_SPEED * random.uniform(0.5, 1.0), theta=theta)
-
             self.asteroidsGroup.add(c)
+
 
     def destroyAsteroid(self, a):
         # print("Destroying", a.name)

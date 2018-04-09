@@ -1,8 +1,8 @@
 import sys
-
 import pygame
 
 from Parameters import *
+
 
 
 class GameDisplay:
@@ -23,6 +23,10 @@ class GameDisplay:
 
         self.gameModel = gameModel
         self.player = player
+
+    def startThread(self):
+        while not self.gameModel.isOver:
+            self.update(10)
 
     def update(self, useInput=True):
 
@@ -50,6 +54,7 @@ class GameDisplay:
             self.screen.blit(label, ((SCREEN_WIDTH - label.get_width()) / 2, (SCREEN_HEIGHT - label.get_height()) / 2))
             label2 = self.myFont100.render("Press Enter to restart, Echap to quit", 1, (255, 255, 255))
             self.screen.blit(label2, ((SCREEN_WIDTH - label2.get_width()) / 2, 100 + (SCREEN_HEIGHT - label2.get_height()) / 2))
+            #TODO: destroy windows when launched by genetic algorithm
             return
 
         if not self.gameModel.isOver:

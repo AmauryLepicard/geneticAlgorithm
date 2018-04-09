@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import pygame
+import threading
 
 from AIPlayer import AIPlayer
 from GameDisplay import GameDisplay
@@ -12,11 +13,11 @@ class GeneticAlgorithm:
         with open("dna.txt", 'a') as f_handle:
             population = Population(populationSize, gameModel)
             for i in range(generations):
-                population.testAll()
+                population.computeAllFitness()
                 print("Generation", i, "Best fitness", max(population.fitnessDict.values()), "Average fitness", np.average(list(population.fitnessDict.values())))
                 bestPlayer = max(population.fitnessDict, key=population.fitnessDict.get)
                 np.savetxt(f_handle, bestPlayer.DNA(), fmt='%.5f', delimiter=",", newline=",")
-                population.testPlayer(bestPlayer, True)
+                population.computePlayerFitness(bestPlayer, True)
                 population.generateNewPopulation()
         f_handle.close()
 
@@ -26,7 +27,7 @@ class Population:
         self.fitnessDict = {}
         self.gameModel = gameModel
         for i in range(nbPlayers):
-            player = AIPlayer(self.gameModel, "p0"+str(i))
+            player = AIPlayer(self.gameModel, "g0p"+str(i))
             self.add(player)
         self.generationNumber = 0
 
@@ -34,7 +35,7 @@ class Population:
         self.fitnessDict[player] = -1.0
 
     # @functionTimer
-    def testPlayer(self, player, showGame=True):
+    def computePlayerFitness(self, player, showGame=True):
         self.gameModel.restart()
         if showGame:
             display = GameDisplay(self.gameModel, player)
@@ -53,15 +54,26 @@ class Population:
             player.update()
             if showGame:
                 display.update()
+        self.fitnessDict[player] = player.gameModel.age
+        print(player.name, "=>", self.fitnessDict[player], end="", flush=True)
 
-        return player.gameModel.age
-
-    @functionTimer
-    def testAll(self):
+    # @functionTimer
+    def computeAllFitness(self, useThread=False):
         print("Testing generation", self.generationNumber, ":")
-        for i, player in enumerate(self.fitnessDict):
-            self.fitnessDict[player] = self.testPlayer(player, False)
-            print(player.name, "=>", self.fitnessDict[player] , ",", end="", flush=True)
+        if useThread:
+            threads = {}
+            for p in self.fitnessDict:
+                threads[p] = threading.Thread(target=self.computePlayerFitness, kwargs={'player': p, 'showGame': False})
+                threads[p].start()
+                # self.fitnessDict[player] = self.testPlayer(player, False)
+                # print(player.name, "=>", self.fitnessDict[player] , ",", end="", flush=True)
+            for p in self.fitnessDict:
+                threads[p].join()
+                print(p.name, "=>", self.fitnessDict[p], ",", end="", flush=True)
+        else:
+            for i, player in enumerate(self.fitnessDict):
+                self.computePlayerFitness(player, False)
+                print(player.name, "=>", self.fitnessDict[player], ",", end="", flush=True)
 
     def selectBestPlayers(self, percentBest=0.2, useRouletteWheel=False, allowMultiSelect=True):  # By default, the 10% best of the population are chosen, and each player can only be chosen once
         numberToSelect = int(len(self.fitnessDict) * percentBest)
@@ -143,7 +155,7 @@ class Population:
         for i in range(len(self.fitnessDict) - len(bestPlayers)):
             father = random.choice(bestPlayers)
             mother = random.choice(bestPlayers)
-            child = self.crossover(father, mother, "p"+str(self.generationNumber)+str(i))
+            child = self.crossover(father, mother, "g" + str(self.generationNumber) + "p" + str(i))
 
             # mutate the child
             child = self.mutate(child)

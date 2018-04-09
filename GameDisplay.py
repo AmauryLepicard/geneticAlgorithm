@@ -44,7 +44,6 @@ class GameDisplay:
             self.screen.blit(label, ((SCREEN_WIDTH - label.get_width()) / 2, (SCREEN_HEIGHT - label.get_height()) / 2))
             label2 = self.myFont100.render("Press Enter to restart, Echap to quit", 1, (255, 255, 255))
             self.screen.blit(label2, ((SCREEN_WIDTH - label2.get_width()) / 2, 100 + (SCREEN_HEIGHT - label2.get_height()) / 2))
-            print("Game Over")
             pygame.display.quit()
             pygame.quit()
             return

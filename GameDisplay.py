@@ -4,7 +4,6 @@ import pygame
 from Parameters import *
 
 
-
 class GameDisplay:
     def __init__(self, gameModel, player):
         pygame.init()
@@ -28,16 +27,7 @@ class GameDisplay:
         while not self.gameModel.isOver:
             self.update(10)
 
-    def update(self, useInput=True):
-
-        if useInput:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                    sys.exit()
-                if self.gameModel.isOver and (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN):
-                    self.gameModel.restart()
-                if self.gameModel.isOver and event.type == pygame.MOUSEBUTTONDOWN:
-                    self.gameModel.restart()
+    def update(self):
 
         # clear screen
         self.screen.fill((0, 0, 0))
@@ -54,10 +44,12 @@ class GameDisplay:
             self.screen.blit(label, ((SCREEN_WIDTH - label.get_width()) / 2, (SCREEN_HEIGHT - label.get_height()) / 2))
             label2 = self.myFont100.render("Press Enter to restart, Echap to quit", 1, (255, 255, 255))
             self.screen.blit(label2, ((SCREEN_WIDTH - label2.get_width()) / 2, 100 + (SCREEN_HEIGHT - label2.get_height()) / 2))
-            #TODO: destroy windows when launched by genetic algorithm
+            print("Game Over")
+            pygame.display.quit()
+            pygame.quit()
             return
 
-        if not self.gameModel.isOver:
+        else:
 
             # draw gameModel
             self.gameModel.asteroidsGroup.draw(self.screen)

@@ -19,7 +19,6 @@ class AIPlayer:
         self.commands = np.zeros(3)
         self.name = name
 
-
     def DNA(self):
         return self.neuralNetwork.DNA()
 

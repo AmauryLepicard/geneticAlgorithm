@@ -1,8 +1,6 @@
 import random
-import math
 import numpy as np
 import pygame
-import threading
 
 from AIPlayer import AIPlayer
 from GameDisplay import GameDisplay
@@ -11,13 +9,16 @@ from Decorators import *
 
 class GeneticAlgorithm:
     def __init__(self, populationSize, generations, gameModel):
-        population = Population(populationSize, gameModel)
-        for i in range(generations):
-            population.testAll()
-            print("Generation", i, "Best fitness", max(population.fitnessDict.values()), "Average fitness", np.average(list(population.fitnessDict.values())))
-            bestPlayer = max(population.fitnessDict, key=population.fitnessDict.get)
-            population.testPlayer(bestPlayer, True)
-            population.generateNewPopulation()
+        with open("dna.txt", 'a') as f_handle:
+            population = Population(populationSize, gameModel)
+            for i in range(generations):
+                population.testAll()
+                print("Generation", i, "Best fitness", max(population.fitnessDict.values()), "Average fitness", np.average(list(population.fitnessDict.values())))
+                bestPlayer = max(population.fitnessDict, key=population.fitnessDict.get)
+                np.savetxt(f_handle, bestPlayer.DNA(), fmt='%.5f', delimiter=",", newline=",")
+                population.testPlayer(bestPlayer, True)
+                population.generateNewPopulation()
+        f_handle.close()
 
 
 class Population:
@@ -51,7 +52,7 @@ class Population:
             player.gameModel.update(delta, False)
             player.update()
             if showGame:
-                display.update(False)
+                display.update()
 
         return player.gameModel.age
 

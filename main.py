@@ -23,7 +23,7 @@ mouseSprite = pygame.sprite.Sprite()
 
 game = GameModel.GameModel(0, area, asteroidsNumber=ASTEROID_NUMBER)
 
-player = AIPlayer.AIPlayer(game)
+player = AIPlayer.AIPlayer(game, "player")
 clock = pygame.time.Clock()
 while True:
     for event in pygame.event.get():
@@ -57,7 +57,7 @@ while True:
     if not game.isOver:
         # update gameModel model
         game.update(delta)
-        player.update(delta)
+        player.update()
 
         # draw gameModel
         game.asteroidsGroup.update(delta)

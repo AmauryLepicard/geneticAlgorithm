@@ -1,11 +1,10 @@
-import sys
 import pygame
 
 from Parameters import *
 
 
 class GameDisplay:
-    def __init__(self, gameModel, player):
+    def __init__(self):
         pygame.init()
 
         # screen
@@ -20,51 +19,42 @@ class GameDisplay:
 
         self.mouseSprite = pygame.sprite.Sprite()
 
-        self.gameModel = gameModel
-        self.player = player
+        self.player = None
+        self.generation = -1
 
-    def startThread(self):
-        while not self.gameModel.isOver:
-            self.update(10)
+    def setPlayer(self, player, generation):
+        self.player = player
+        self.generation = generation
 
     def update(self):
+        if not self.player.gameModel.isOver:
+            # clear screen
+            self.screen.fill((0, 0, 0))
 
-        # clear screen
-        self.screen.fill((0, 0, 0))
+            # render text
+            playerInfoLabel = self.myFont30.render(
+                "Generation: " + str(self.generation) + "    Name:" + self.player.name, 1, (255, 255, 255))
+            self.screen.blit(playerInfoLabel, (5, 5))
 
-        # render text
-        asteroidsDestroyedLabel = self.myFont30.render("Asteroids destroyed: " + str(self.gameModel.score), 1, (255, 255, 255))
-        self.screen.blit(asteroidsDestroyedLabel, (0, 0))
+            timeLabel = self.myFont30.render(
+                "Time: " + str(self.player.gameModel.age) + "    Asteroids destroyed: " + str(
+                    self.player.gameModel.score), 1, (255, 255, 255))
+            self.screen.blit(timeLabel, (300, 5))
 
-        timeLabel = self.myFont30.render("Time: " + str(self.gameModel.age), 1, (255, 255, 255))
-        self.screen.blit(timeLabel, (0, 35))
+            inputOutputLabel = self.myFont30.render(
+                "Input: " + str(self.player.inputVector) + "    Output: " + str(self.player.commands), 1,
+                (255, 255, 255))
+            self.screen.blit(inputOutputLabel, (5, 35))
 
-        if self.gameModel.isOver:
+            # draw gameModel
+            self.player.gameModel.asteroidsGroup.draw(self.screen)
+            self.player.gameModel.shipGroup.draw(self.screen)
+            self.player.gameModel.bulletsGroup.draw(self.screen)
+
+            pygame.display.flip()
+        else:
             label = self.myFont200.render("GAME OVER", 1, (255, 255, 255))
             self.screen.blit(label, ((SCREEN_WIDTH - label.get_width()) / 2, (SCREEN_HEIGHT - label.get_height()) / 2))
             label2 = self.myFont100.render("Press Enter to restart, Echap to quit", 1, (255, 255, 255))
-            self.screen.blit(label2, ((SCREEN_WIDTH - label2.get_width()) / 2, 100 + (SCREEN_HEIGHT - label2.get_height()) / 2))
-            pygame.display.quit()
-            pygame.quit()
-            return
-
-        else:
-
-            # draw gameModel
-            self.gameModel.asteroidsGroup.draw(self.screen)
-            self.gameModel.shipGroup.draw(self.screen)
-            self.gameModel.bulletsGroup.draw(self.screen)
-
-            # show quadrant lines#
-            #        nbQuadrants = 8
-            #        for i in range(nbQuadrants):
-            #            angle = gameModel.ship.theta + (i+0.5)*2*math.pi/nbQuadrants
-            #            delta = np.array((2000*math.cos(angle), 2000*math.sin(angle)))
-            #            pygame.draw.aaline(screen, (100,100,100), gameModel.ship.pos, gameModel.ship.pos+delta)
-
-            timeLabel = self.myFont30.render("Input: " + str(self.player.inputVector), 1, (255, 255, 255))
-            self.screen.blit(timeLabel, (0, 70))
-            timeLabel = self.myFont30.render("Output: " + str(self.player.commands), 1, (255, 255, 255))
-            self.screen.blit(timeLabel, (0, 100))
-
-        pygame.display.flip()
+            self.screen.blit(label2,
+                             ((SCREEN_WIDTH - label2.get_width()) / 2, 100 + (SCREEN_HEIGHT - label2.get_height()) / 2))

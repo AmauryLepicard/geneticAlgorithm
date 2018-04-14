@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-
 def relu(x):
     return max(0.0, x)
 
@@ -16,11 +15,11 @@ class NeuralNetwork:
         self.nbOutputs = nbOutputs
 
         # input layer
-        self.layers = [NNLayer(nbInputs, nbInputs, np.vectorize(relu))]
+        self.layers = [NNLayer(nbInputs, nbInputs, np.arctan)]
 
         # hidden layers
         for neuronsNb in hiddenLayersSizes:
-            hiddenLayer = NNLayer(self.layers[-1].neuronsNb, neuronsNb, np.vectorize(relu))
+            hiddenLayer = NNLayer(self.layers[-1].neuronsNb, neuronsNb, np.arctan)
             self.layers.append(hiddenLayer)
 
         # output layer
@@ -71,7 +70,7 @@ class NNLayer:
         self.activationFunction = activationFunction
 
         # generate random weights, including an additional one for bias
-        self.weights = np.random.rand(inputNb + 1, neuronsNb)
+        self.weights = np.random.uniform(-1.0, 1.0, (inputNb + 1, neuronsNb))
 
     def compute(self, inputVector):
         if len(inputVector) != self.inputNb:
